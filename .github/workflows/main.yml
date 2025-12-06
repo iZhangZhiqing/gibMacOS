@@ -1,0 +1,45 @@
+name: Download macOS Installer
+on:
+  workflow_dispatch:
+    inputs:
+      macos_version:
+        description: 'macOS Version (e.g., 15 for Sequoia, 14 for Sonoma)'
+        required: true
+        default: '15'
+      specific_version:
+        description: 'Specific Version (e.g., 15.7.1, leave blank for latest)'
+        required: false
+        default: '15.7.1'
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Clone gibMacOS
+        run: |
+          git clone https://github.com/corpnewt/gibMacOS.git
+
+      - name: Download macOS Installer
+        run: |
+          cd gibMacOS
+          python3 gibMacOS.py -d -v ${{ github.event.inputs.macos_version }} -r ${{ github.event.inputs.specific_version }}
+
+      - name: Package Installer
+        run: |
+          cd gibMacOS/macOS\ Downloads/
+          tar -czvf macOS_Installer.tar.gz *
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS_Installer
+          path: gibMacOS/macOS\ Downloads/macOS_Installer.tar.gz
+          retention-days: 7
