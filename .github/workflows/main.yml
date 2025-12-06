@@ -30,7 +30,7 @@ jobs:
       - name: Download macOS Installer
         run: |
           cd gibMacOS
-          python3 gibMacOS.py -d -v ${{ github.event.inputs.macos_version }} -r ${{ github.event.inputs.specific_version }}
+          python3 gibMacOS.py -d --version ${{ github.event.inputs.specific_version }}
 
       - name: Package Installer
         run: |
